@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from api.views import TaskViewSet, UserViewSet
+from api.views import TaskViewSet, UserViewSet, signup
 
 router = SimpleRouter()
 
@@ -11,4 +11,5 @@ router.register('task', TaskViewSet, basename='task')
 
 urlpatterns = [
     path('v1/', include(router.urls)),
+    path('v1/auth/signup/', signup, name='signup'),
 ]
