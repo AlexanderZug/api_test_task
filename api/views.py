@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import Task, User
-from api.permissions import OwnerOrReadOnly
+from api.permissions import OwnerOrReadOnly, IsAdminOrReadOnly
 from api.serializers import TaskSerializer, UserSerializer
 
 

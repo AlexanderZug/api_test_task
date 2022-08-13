@@ -6,12 +6,13 @@ class User(AbstractUser):
     name = models.CharField(
         verbose_name='Полное имя пользователя', max_length=30
     )
-    tasks_for_user = models.ManyToManyField(
-        'Task', through='TaskUser', related_name='user_id'
-    )
+
+    def __str__(self):
+        return self.username
 
 
 class Task(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='task')
     task_title = models.CharField(max_length=120)
     task_description = models.TextField()
     task_completion = models.DateField()
@@ -23,8 +24,3 @@ class Task(models.Model):
 
     def __str__(self):
         return self.task_title
-
-
-class TaskUser(models.Model):
-    task = models.ForeignKey('Task', on_delete=models.CASCADE)
-    performer = models.ForeignKey('User', on_delete=models.CASCADE)

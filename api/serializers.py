@@ -1,16 +1,17 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
-from .models import Task, TaskUser, User
+from .models import Task, User
 import datetime as dt
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Task
         fields = (
             'id',
-            'user_id',
+            'user',
             'task_title',
             'task_description',
             'task_completion',
@@ -25,7 +26,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    tasks_for_user = TaskSerializer(many=True, required=False)
+    task = TaskSerializer(many=True, required=False)
 
     class Meta:
         model = User
@@ -33,23 +34,5 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'name',
-            'tasks_for_user',
+            'task',
         )
-
-    # validators = [
-    #     UniqueTogetherValidator(
-    #         queryset=User.objects.all(),
-    #         fields=('username', 'tasks_for_user')
-    #     )
-    # ]
-    #
-    # def create(self, validated_data):
-    #     if 'tasks_for_user' not in self.initial_data:
-    #         user = User.objects.create(**validated_data)
-    #         return user
-    #     tasks_for_user = validated_data.pop('tasks_for_user')
-    #     user = User.objects.create(**validated_data)
-    #     for user_task in tasks_for_user:
-    #         current_user_task, status = Task.objects.get_or_create(**user_task)
-    #         TaskUser.objects.create(task=current_user_task, performer=user)
-    #     return user
