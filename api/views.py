@@ -5,19 +5,20 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import Task, User
+from api.permissions import OwnerOrReadOnly
 from api.serializers import TaskSerializer, UserSerializer
 
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (OwnerOrReadOnly,)
 
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (OwnerOrReadOnly,)
 
     @action(detail=True, methods=['get'])
     def detail_info(self, request, pk=None):

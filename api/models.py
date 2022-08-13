@@ -14,7 +14,7 @@ class User(AbstractUser):
 class Task(models.Model):
     task_title = models.CharField(max_length=120)
     task_description = models.TextField()
-    task_completion = models.DateField(auto_now=True)
+    task_completion = models.DateField()
     file = models.FileField(
         verbose_name='загрузка файла',
         upload_to='files/',
