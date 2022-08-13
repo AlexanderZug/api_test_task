@@ -12,7 +12,9 @@ class User(AbstractUser):
 
 
 class Task(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='task')
+    user = models.ForeignKey(
+        'User', on_delete=models.CASCADE, related_name='task'
+    )
     task_title = models.CharField(max_length=120)
     task_description = models.TextField()
     task_completion = models.DateField()

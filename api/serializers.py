@@ -1,7 +1,8 @@
+import datetime as dt
+
 from rest_framework import serializers
 
 from .models import Task, User
-import datetime as dt
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -21,11 +22,13 @@ class TaskSerializer(serializers.ModelSerializer):
     def validate_task_completion(self, value):
         today = dt.date.today()
         if value < today:
-            raise serializers.ValidationError('Проверьте время завершения задачи!')
+            raise serializers.ValidationError(
+                'Проверьте время завершения задачи!'
+            )
         return value
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     task = TaskSerializer(many=True, required=False)
 
     class Meta:
