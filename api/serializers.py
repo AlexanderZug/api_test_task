@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'name', 'password', 'tasks_for_user')
+        fields = ('id', 'username', 'name', 'password', 'tasks_for_user', 'is_active')
 
     def create(self, validated_data):
         if 'tasks_for_user' not in self.initial_data:
@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class SignupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('username', 'password',)
+# class SignupSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ('username', 'password',)
