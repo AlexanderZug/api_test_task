@@ -1,5 +1,3 @@
-from abc import ABC
-
 from rest_framework import serializers
 
 from .models import Task, TaskUser, User
@@ -23,7 +21,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'name', 'password', 'tasks_for_user', 'is_active')
+        fields = (
+            'id',
+            'username',
+            'name',
+            'password',
+            'tasks_for_user',
+            'is_active',
+        )
 
     def create(self, validated_data):
         if 'tasks_for_user' not in self.initial_data:
@@ -35,9 +40,3 @@ class UserSerializer(serializers.ModelSerializer):
             current_user_task, status = Task.objects.get_or_create(**user_task)
             TaskUser.objects.create(task=current_user_task, performer=user)
         return user
-
-
-# class SignupSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('username', 'password',)

@@ -22,7 +22,7 @@ class Task(models.Model):
     )
 
     def __str__(self):
-        return str(self.task_title)
+        return self.task_title
 
 
 class TaskUser(models.Model):
