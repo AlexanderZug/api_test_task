@@ -20,6 +20,10 @@ class TaskSerializer(serializers.ModelSerializer):
         )
 
     def validate_task_completion(self, value):
+        """
+        Метод проверяет, что пользователь не
+        поставил время завершения задачи в прошлом.
+        """
         today = dt.date.today()
         if value < today:
             raise serializers.ValidationError(

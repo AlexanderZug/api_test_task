@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
@@ -25,6 +24,10 @@ class TaskViewSet(ModelViewSet):
     pagination_class = LimitOffsetPagination
 
     def create(self, request, *args, **kwargs):
+        """
+        Метод не позволяет неавторизованным пользователям
+        использовать метод POST.
+        """
         if request.user.is_anonymous:
             raise serializers.ValidationError(
                 'Метод POST не разрешен для неавторизованного пользователя.'
@@ -33,6 +36,7 @@ class TaskViewSet(ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def detail_info(self, request, pk=None):
+        """Метод выводит список задач пользователя по id."""
         queryset = Task.objects.filter(user_id=pk).all()
         if not queryset:
             raise serializers.ValidationError(
