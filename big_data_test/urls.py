@@ -24,7 +24,6 @@ schema_view = get_schema_view(
         title="Task API",
         default_version='v1',
         description="Документация приложения api проекта Gig Data Test",
-        # terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(
             email="alexandertsygankov.unterwegs@gmail.com"
         ),
