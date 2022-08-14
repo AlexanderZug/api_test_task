@@ -5,14 +5,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import Task, User
-from api.permissions import OwnerOrReadOnlyTask, OwnerOrReadOnlyUser
+from api.permissions import OwnerOrReadOnly
 from api.serializers import CustomUserSerializer, TaskSerializer
 
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (OwnerOrReadOnlyUser,)
+    permission_classes = (OwnerOrReadOnly,)
     http_method_names = ['head', 'get', 'put', 'patch', 'delete']
     pagination_class = LimitOffsetPagination
 
@@ -20,7 +20,7 @@ class UserViewSet(ModelViewSet):
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.select_related('user').all()
     serializer_class = TaskSerializer
-    permission_classes = (OwnerOrReadOnlyTask,)
+    permission_classes = (OwnerOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
     def create(self, request, *args, **kwargs):
