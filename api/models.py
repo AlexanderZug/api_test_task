@@ -9,6 +9,10 @@ class User(AbstractUser):
     )
     is_active = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = 'пользователь'
+        verbose_name_plural = 'пользователи'
+
     def __str__(self):
         return self.username
 
@@ -18,6 +22,7 @@ class Task(models.Model):
         'User',
         on_delete=models.CASCADE,
         related_name='task',
+        verbose_name='Никнейм',
     )
     task_title = models.CharField(
         verbose_name='Название задачи',
@@ -34,6 +39,10 @@ class Task(models.Model):
         upload_to='files/',
         blank=True,
     )
+
+    class Meta:
+        verbose_name = 'задача'
+        verbose_name_plural = 'задачи'
 
     def __str__(self):
         return self.task_title
