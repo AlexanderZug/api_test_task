@@ -5,7 +5,7 @@ from api.views import TaskViewSet, UserViewSet
 
 router = SimpleRouter()
 
-router.register('user', UserViewSet, 'user')
+router.register('user', UserViewSet, 'users')
 router.register('tasks', TaskViewSet, 'tasks')
 
 urlpatterns = [
