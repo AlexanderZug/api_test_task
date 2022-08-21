@@ -1,4 +1,5 @@
 from shutil import rmtree
+from typing import NamedTuple
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -10,30 +11,12 @@ from rest_framework.test import APITestCase
 from api.models import Task, User
 
 
-class GetTest(APITestCase):
-    def setUp(self):
-        user = User.objects.create(username='name', password='admin1989')
-        Task.objects.create(
-            user=user,
-            task_title='test',
-            task_description='test',
-            task_completion='2022-09-01',
-        )
-
-    def test_get_task(self):
-        response = self.client.get(reverse('tasks-list'))
-        self.assertEqual(response.status_code, HTTP_200_OK)
-
-    def test_get_user(self):
-        response = self.client.get(reverse('users-list'))
-        self.assertEqual(response.status_code, HTTP_200_OK)
-
-    def test_get_detail_tasks(self):
-        response = self.client.get(reverse('tasks-detail', args=[1]))
-        self.assertEqual(response.status_code, HTTP_200_OK)
+class ReverseData(NamedTuple):
+    list: str
+    detail: str
 
 
-class DeleteTest(APITestCase):
+class TestUserTask(APITestCase):
     def setUp(self):
         user = User.objects.create(username='name', password='admin1989')
         Task.objects.create(
@@ -43,35 +26,16 @@ class DeleteTest(APITestCase):
             task_completion='2022-09-01',
         )
         self.client.force_authenticate(user=user)
-
-    def test_delete_task(self):
-        response = self.client.delete(reverse('tasks-detail', args=[1]))
-        self.assertEqual(response.status_code, HTTP_204_NO_CONTENT)
-
-    def test_delete_user(self):
-        response = self.client.delete(reverse('users-detail', args=[1]))
-        self.assertEqual(response.status_code, HTTP_204_NO_CONTENT)
-
-
-class PostTest(APITestCase):
-    def setUp(self):
-        user = User.objects.create(username='name', password='admin1989')
-
-        Task.objects.create(
-            user=user,
-            task_title='test',
-            task_description='test',
-            task_completion='2022-09-01',
-        )
-        self.client.force_authenticate(user=user)
-
-    @classmethod
-    def tearDownClass(cls):
-        rmtree(settings.MEDIA_ROOT, ignore_errors=True)
-        super().tearDownClass()
-
-    def test_post_task(self):
-        task_count = Task.objects.count()
+        self.reverse_data = {
+            'task': ReverseData(
+                list=reverse('tasks-list'),
+                detail=reverse('tasks-detail', args=[1]),
+            ),
+            'user': ReverseData(
+                list=reverse('users-list'),
+                detail=reverse('users-detail', args=[1]),
+            ),
+        }
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -85,61 +49,60 @@ class PostTest(APITestCase):
             content=small_gif,
             content_type='image/gif',
         )
-        task_data = {
-            'task_title': 'post-test',
-            'task_description': 'post-test',
-            'task_completion': '2022-09-03',
-            'file': uploaded,
-        }
-        response = self.client.post(reverse('tasks-list'), task_data)
-        self.assertEqual(response.status_code, HTTP_201_CREATED)
-        self.assertEqual(task_count + 1, Task.objects.count())
-
-
-class PutPatchTest(APITestCase):
-    def setUp(self):
-        user = User.objects.create(
-            username='test-user-name',
-            password='admin1989',
-            name='test-name',
-        )
-        Task.objects.create(
-            user=user,
-            task_title='test',
-            task_description='test',
-            task_completion='2022-09-01',
-        )
-        self.client.force_authenticate(user=user)
         self.data = {
             'task_title': 'put-path-test',
             'task_description': 'put-path-test',
             'task_completion': '2022-09-03',
+            'file': uploaded,
         }
         self.data_user = {
             'username': 'put-test',
             'name': 'put-test',
         }
 
-    def test_put_task(self):
-        response = self.client.put(
-            reverse('tasks-detail', args=[1]), self.data
-        )
-        self.assertEqual(response.status_code, HTTP_200_OK)
+    @classmethod
+    def tearDownClass(cls):
+        rmtree(settings.MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
 
-    def test_patch_task(self):
-        response = self.client.patch(
-            reverse('tasks-detail', args=[1]), self.data
-        )
-        self.assertEqual(response.status_code, HTTP_200_OK)
+    def test_get(self):
+        for url in self.reverse_data.values():
+            with self.subTest(url=url.list):
+                response = self.client.get(url.list).status_code
+                self.assertEqual(response, HTTP_200_OK)
+
+    def test_delete(self):
+        for url in self.reverse_data.values():
+            with self.subTest(url=url.detail):
+                response = self.client.delete(url.detail).status_code
+                self.assertEqual(response, HTTP_204_NO_CONTENT)
 
     def test_put_user(self):
         response = self.client.put(
-            reverse('users-detail', args=[1]), self.data_user
-        )
-        self.assertEqual(response.status_code, HTTP_200_OK)
+            self.reverse_data['user'].detail, self.data_user
+        ).status_code
+        self.assertEqual(response, HTTP_200_OK)
+
+    def test_put_task(self):
+        response = self.client.put(
+            self.reverse_data['task'].detail, self.data
+        ).status_code
+        self.assertEqual(response, HTTP_200_OK)
 
     def test_patch_user(self):
         response = self.client.patch(
-            reverse('users-detail', args=[1]), self.data_user
-        )
-        self.assertEqual(response.status_code, HTTP_200_OK)
+            self.reverse_data['user'].detail, self.data_user
+        ).status_code
+        self.assertEqual(response, HTTP_200_OK)
+
+    def test_patch_task(self):
+        response = self.client.patch(
+            self.reverse_data['task'].detail, self.data
+        ).status_code
+        self.assertEqual(response, HTTP_200_OK)
+
+    def test_post_task(self):
+        task_count = Task.objects.count()
+        response = self.client.post(self.reverse_data['task'].list, self.data)
+        self.assertEqual(response.status_code, HTTP_201_CREATED)
+        self.assertEqual(task_count + 1, Task.objects.count())
