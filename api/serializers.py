@@ -10,14 +10,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = (
-            'id',
-            'user',
-            'task_title',
-            'task_description',
-            'task_completion',
-            'file',
-        )
+        fields = '__all__'
 
     def validate_task_completion(self, value):
         """
@@ -32,14 +25,9 @@ class TaskSerializer(serializers.ModelSerializer):
         return value
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     task = TaskSerializer(many=True, required=False)
 
     class Meta:
         model = User
-        fields = (
-            'id',
-            'username',
-            'name',
-            'task',
-        )
+        fields = '__all__'

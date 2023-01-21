@@ -6,14 +6,14 @@ from rest_framework.viewsets import ModelViewSet
 
 from api.models import Task, User
 from api.permissions import OwnerOrReadOnly
-from api.serializers import CustomUserSerializer, TaskSerializer
+from api.serializers import UserSerializer, TaskSerializer
 
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
+    serializer_class = UserSerializer
     permission_classes = (OwnerOrReadOnly,)
-    http_method_names = ['head', 'get', 'put', 'patch', 'delete']
+    http_method_names = ('get', 'put', 'patch', 'delete')
     pagination_class = LimitOffsetPagination
 
 

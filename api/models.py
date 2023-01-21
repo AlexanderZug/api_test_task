@@ -1,13 +1,19 @@
+from __future__ import annotations
+
+from typing import Union
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Manager
 
 
-class User(AbstractUser):
-    name = models.CharField(
-        verbose_name='Полное имя пользователя',
+class User(models.Model):
+    username = models.CharField(
+        verbose_name='Имя пользователя',
         max_length=30,
     )
-    is_active = models.BooleanField(default=True)
+    password = models.CharField(max_length=255)
+    task: Union[Manager, Task]
 
     class Meta:
         verbose_name = 'пользователь'
@@ -19,7 +25,7 @@ class User(AbstractUser):
 
 class Task(models.Model):
     user = models.ForeignKey(
-        'User',
+        User,
         on_delete=models.CASCADE,
         related_name='task',
         verbose_name='Никнейм',
