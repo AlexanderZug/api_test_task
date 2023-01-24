@@ -7,12 +7,12 @@ from django.db import models
 from django.db.models import Manager
 
 
-class User(models.Model):
+class User(AbstractUser):
     username = models.CharField(
         verbose_name='Имя пользователя',
         max_length=30,
+        unique=True,
     )
-    password = models.CharField(max_length=255)
     task: Union[Manager, Task]
 
     class Meta:
