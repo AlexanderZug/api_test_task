@@ -1,4 +1,6 @@
 from shutil import rmtree
+
+from django.contrib.auth import get_user_model
 from typing import NamedTuple
 
 from django.conf import settings
@@ -64,6 +66,20 @@ class TestUserTask(APITestCase):
     def tearDownClass(cls):
         rmtree(settings.MEDIA_ROOT, ignore_errors=True)
         super().tearDownClass()
+
+    def test_create_user_with_email_successful(self):
+        """Test creating a user with an email is successful."""
+        username = 'test'
+        email = 'test@example.com'
+        password = 'testpass123'
+        user = get_user_model().objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+        )
+
+        self.assertEqual(user.email, email)
+        self.assertTrue(user.check_password(password))
 
     def test_get(self):
         for url in self.reverse_data.values():
